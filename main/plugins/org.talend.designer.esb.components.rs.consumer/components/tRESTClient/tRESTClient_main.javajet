@@ -496,17 +496,20 @@ try {
 		if ("application/x-www-form-urlencoded".equals(contentType) && !"GET".equals(method) && !"DELETE".equals(method)) { %>
 		javax.ws.rs.core.Form form_<%=cid%> = new javax.ws.rs.core.Form();
 		<% for (Map<String, String> query : queries) { %>
+			<% if ( query.get("TYPE").equals("@formParam")) { %>
 			form_<%=cid%>.param(<%=query.get("NAME")%> ,<%=query.get("VALUE")%>);
-		<% } %>
+		<% }
+		} %>
 		requestBody_<%=cid%> = form_<%=cid%>;
-	<% } else { %>
+		<% } %>
 		<% if (reuseSSLConnection) { %>
 		    webClient_<%=cid%>.resetQuery();
 		<% } %>
 		<% for (Map<String, String> query : queries) { %>
+			<% if ( !query.get("TYPE").equals("@formParam")) { %>
 			webClient_<%=cid%>.query(<%=query.get("NAME")%> ,<%=query.get("VALUE")%>);
-		<% } %>
-	<% } %>
+		<% }
+		} %>
 
 
 	try {

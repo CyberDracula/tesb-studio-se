@@ -73,6 +73,12 @@
 			<ITEMS>
 				<ITEM NAME="NAME" VALUE='""' />
 				<ITEM NAME="VALUE" VALUE='""' />
+				<ITEM NAME="TYPE" FIELD="CLOSED_LIST">
+					<ITEMS DEFAULT="@queryParam">
+						<ITEM NAME="QUERY_PARAM" VALUE="@queryParam" />
+						<ITEM NAME="FORM_PARAM" VALUE="@formParam" />
+					</ITEMS>
+				</ITEM>
 			</ITEMS>
 		</PARAMETER>
 		<PARAMETER NAME="INPUT_SCHEMA" FIELD="SCHEMA_TYPE" REQUIRED="true" NUM_ROW="31" READONLY="true">
