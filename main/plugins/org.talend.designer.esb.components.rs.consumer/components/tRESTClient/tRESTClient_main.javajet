@@ -96,7 +96,7 @@ for (IConnection conn : dataOutputs) {
        if ("PUT".equals(method) || "PATCH".equals(method)) {
            %>javax.ws.rs.core.Response<%
        } else {
-           %>java.util. Collection<? extends String><%
+           %>java.util.Collection<? extends String><%
        }
 } else { 
        if ("GET".equals(method)) {
@@ -104,24 +104,25 @@ for (IConnection conn : dataOutputs) {
        }else {
            %>javax.ws.rs.core.Response<% 
        }  
-}%> responseDoc_<%=cid%> = null;
+}%>
+responseDoc_<%=cid%> = null;
 
 try {
 	// request body
 	org.dom4j.Document requestDoc_<%=cid%> = null;
 	String requestString_<%=cid%> = null;
-<%	if (null != inputConn) {
-		IMetadataColumn inputConnBodyColumn = inputConn.getMetadataTable().getColumn("body");
-		if (null != inputConnBodyColumn && "id_Document".equals(inputConnBodyColumn.getTalendType())) { %>
-			if (null != <%=inputConn.getName()%>.body) {
-				requestDoc_<%=cid%> = <%=inputConn.getName()%>.body.getDocument();
-			}
-<%		}
-		IMetadataColumn inputConnStringColumn = inputConn.getMetadataTable().getColumn("string");
-		if (null != inputConnStringColumn && "id_String".equals(inputConnStringColumn.getTalendType())) { %>
-			requestString_<%=cid%> = <%=inputConn.getName()%>.string;
-<%		}
-	} %>
+	<%	if (null != inputConn) {
+			IMetadataColumn inputConnBodyColumn = inputConn.getMetadataTable().getColumn("body");
+			if (null != inputConnBodyColumn && "id_Document".equals(inputConnBodyColumn.getTalendType())) { %>
+				if (null != <%=inputConn.getName()%>.body) {
+					requestDoc_<%=cid%> = <%=inputConn.getName()%>.body.getDocument();
+				}
+	<%		}
+			IMetadataColumn inputConnStringColumn = inputConn.getMetadataTable().getColumn("string");
+			if (null != inputConnStringColumn && "id_String".equals(inputConnStringColumn.getTalendType())) { %>
+				requestString_<%=cid%> = <%=inputConn.getName()%>.string;
+	<%		}
+		} %>
 
 	Object requestBody_<%=cid%> = requestDoc_<%=cid%> != null ? requestDoc_<%=cid%> : requestString_<%=cid%>;
 
@@ -131,20 +132,20 @@ try {
 	%>
 
     //resposne class name
-<%
-    String responseClassName = null;
-    if ("*/*".equals(acceptType) || !convertResponseToDom) {
-        responseClassName = "String";
-    } else if  (MULTIPART_MIXED.equals(acceptType)) {
-        if ("PUT".equals(method) || "PATCH".equals(method)) {
-            responseClassName = "javax.ws.rs.core.Response";
-        } else {
-            responseClassName = "String";
-        }
-    } else {
-        responseClassName = "org.dom4j.Document";
-    }
-%>
+	<%
+		String responseClassName = null;
+		if ("*/*".equals(acceptType) || !convertResponseToDom) {
+			responseClassName = "String";
+		} else if  (MULTIPART_MIXED.equals(acceptType)) {
+			if ("PUT".equals(method) || "PATCH".equals(method)) {
+				responseClassName = "javax.ws.rs.core.Response";
+			} else {
+				responseClassName = "String";
+			}
+		} else {
+			responseClassName = "org.dom4j.Document";
+		}
+	%>
 	Class<<% if (MULTIPART_MIXED.equals(acceptType)) {%><%=responseClassName%><%} else {%>?<%} %>> responseClass_<%=cid%>
 		= <%=responseClassName%>.class;
 
@@ -238,8 +239,8 @@ try {
 				}
 				public String getCorrelationId() {
 					return correlationId;
-				};
-			}
+				}
+		}
 		final Object correlationIDCallbackHandler = new EsbJobCorrelationCallbackHandler(<%=paramsHelper.getStringParam("__CORRELATION_VALUE__")%>);
 		factoryBean_<%=cid%>.getProperties(true).put(
 				org.talend.esb.policy.correlation.feature.CorrelationIDFeature.CORRELATION_ID_CALLBACK_HANDLER,
@@ -557,12 +558,12 @@ try {
 			<%=connResponseName%>.string = "";
 			<% if (!MULTIPART_MIXED.equals(acceptType)) {%>
 				<% if ("GET".equals(method)) {%>
-				{
 					Object responseObj_<%=cid%> = responseDoc_<%=cid%>;
 				<%} else {%>
 				Object responseObj_<%=cid%> = null;
 				if(responseDoc_<%=cid%> != null && responseDoc_<%=cid%>.hasEntity()){
 					responseObj_<%=cid%> = responseDoc_<%=cid%>.readEntity(responseClass_<%=cid%>);
+				}
 				<%}%>
 				if(responseObj_<%=cid%> != null){
 					if (responseClass_<%=cid%> == String.class && responseObj_<%=cid%> instanceof String) {
@@ -578,7 +579,6 @@ try {
 						<%=connResponseName%>.body = responseTalendDoc_<%=cid%>;
 					}
 				}
-			}
 			<% } %>
 
 			java.util.Map<String, javax.ws.rs.core.NewCookie> cookies_<%=cid%> = new java.util.HashMap<String, javax.ws.rs.core.NewCookie>();
@@ -670,10 +670,15 @@ try {
 	<% } %>
 }
 <% } else { %>
-for (String responsePart_<%=cid%> : responseDoc_<%=cid%>) {
-    responseParts_<%=cid%>.add(responsePart_<%=cid%>);
+if (responseDoc_<%=cid%> != null && !responseDoc_<%=cid%>.isEmpty()) {
+	for (String responsePart_<%=cid%> : responseDoc_<%=cid%>) {
+		responseParts_<%=cid%>.add(responsePart_<%=cid%>);
+	}
 }
 <% } %>
-for (String responsePart_<%=cid%> : responseParts_<%=cid%>) {    
-    <%=connResponseName%>.string = responsePart_<%=cid%>;
+if (responseParts_<%=cid%> != null && !responseParts_<%=cid%>.isEmpty()) {
+	for (String responsePart_<%=cid%> : responseParts_<%=cid%>) {    
+		<%=connResponseName%>.string = responsePart_<%=cid%>;
+	}
+}
 <% } %>
